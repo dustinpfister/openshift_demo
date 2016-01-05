@@ -1,0 +1,27 @@
+{
+  "name": "openshift_demo",
+  "version": "1.0.0",
+  "description": "openshift demo",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^3.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dustinpfister/openshift_demo.git"
+  },
+  "keywords": [
+    "openshift",
+    "demo"
+  ],
+  "author": "Dustin Pfister",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dustinpfister/openshift_demo/issues"
+  },
+  "homepage": "https://github.com/dustinpfister/openshift_demo#readme"
+}
