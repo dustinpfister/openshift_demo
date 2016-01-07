@@ -216,9 +216,16 @@ app.get('/', function(req, res){
             '<p> You are visiter #: '+ displayCount + '</p>'+
 
              '<h2>OS Count</h2>'+
-             '<p>Android: '+osCount.android+'</p>'+
-             '<p>Other Linux: '+osCount.otherLinux+'</p>'+
-             '<p>Other OS / Unkown: '+osCount.otherOS+'</p>'+
+             '<p style="color:#ffaa00;">Android: '+osCount.android+'</p>'+
+             '<p style="color:#ffff00;">Other Linux: '+osCount.otherLinux+'</p>'+
+             '<p style="color:#888888;">Other OS / Unkown: '+osCount.otherOS+'</p>'+
+             
+             '<div style="width:300px; height:30px; background:#888888;">'+
+
+                 '<div style="display:inline-block; width:'+Math.floor(osCount.android / osCount.total * 300)+'px; height:30px; background:#ffaa00;"></div>'+
+                 '<div style="display:inline-block; width:'+Math.floor(osCount.otherLinux / osCount.total * 300)+'px; height:30px; background:#ffff00;"></div>'+
+
+             '</div>'+
 
 
             '<h2>unique ip count: </h2>'+
