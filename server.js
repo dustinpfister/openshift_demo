@@ -9,6 +9,8 @@
 var express = require('express'),
 mongoose = require('mongoose'),
 
+ipCount = 0, // number of ip address logged
+
 // express app
 app = express(),
 
@@ -23,9 +25,9 @@ openShift.mongo = 'mongodb://localhost/openshift_demo'; // default to local
 // if offline
 if (typeof openShift.ipaddress === "undefined") {
 
-    console.warn('Working offline? , using 127.0.0.1');
-    openShift.ipaddress = "127.0.0.1";
-
+    // use something local such as "127.0.0.1", "localhost", or something like "192.168.1.4"
+    openShift.ipaddress = '192.168.1.4';
+    console.warn('Working offline? , using '+openShift.ipaddress+' on port '+openShift.port);
 };
 
 // mongo on openshift?
@@ -88,7 +90,7 @@ findAgent = function(log, userAgent){
 
     return false;
         
-}
+};
 
 // root path get requests
 app.get('/', function(req, res){
@@ -205,7 +207,9 @@ app.get('/', function(req, res){
             res.send( ' <h1>hello i am dustins openshift_demo app working at openshift</h1><br><br>'+
             '<h2>Visit Count</h2>'+
             '<p> You are visiter #: '+ displayCount + '</p>'+
-            '<p> Hello visiter from ip: ' + log.ip + ' i have a visit count of ' + log.visitCount + ' from this ip address.</p>'+
+            '<h2>unique ip count: </h2>'+
+            '<p>I have logged '+ipCount+' unique ip address in my database.</p>'+
+            '<p> YOU are a visiter from the unique ip ' + log.ip + ', and i have a visit count of ' + log.visitCount + ' from this ip address.</p>'+
             '<h2> User agent history from this ip: </h2>'+
             html
             );
@@ -218,5 +222,30 @@ app.get('/', function(req, res){
 
 });
 
+var update = function(){
+
+    setTimeout(update, 10000);
+
+    iplogger.count(function(err,count){
+
+        // if we have a count
+        if(count){
+
+            console.log(count);
+
+            // update ip count
+            ipCount = count;
+
+        }
+
+    });
+
+};
+
+
+
 // start server
 app.listen(openShift.port, openShift.ipaddress);
+
+// run update loop
+update();
