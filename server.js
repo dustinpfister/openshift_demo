@@ -10,6 +10,13 @@ var express = require('express'),
 mongoose = require('mongoose'),
 
 ipCount = 0, // number of ip address logged
+osCount = {
+    total : 0,
+    android : 0,
+    otherLinux : 0,
+    otherOS : 0
+
+},
 
 // express app
 app = express(),
@@ -207,6 +214,13 @@ app.get('/', function(req, res){
             res.send( ' <h1>hello i am dustins openshift_demo app working at openshift</h1><br><br>'+
             '<h2>Visit Count</h2>'+
             '<p> You are visiter #: '+ displayCount + '</p>'+
+
+             '<h2>OS Count</h2>'+
+             '<p>Android: '+osCount.android+'</p>'+
+             '<p>Other Linux: '+osCount.otherLinux+'</p>'+
+             '<p>Other OS / Unkown: '+osCount.otherOS+'</p>'+
+
+
             '<h2>unique ip count: </h2>'+
             '<p>I have logged '+ipCount+' unique ip address in my database.</p>'+
             '<p> YOU are a visiter from the unique ip ' + log.ip + ', and i have a visit count of ' + log.visitCount + ' from this ip address.</p>'+
@@ -224,19 +238,68 @@ app.get('/', function(req, res){
 
 var update = function(){
 
+    var i, a, aLen, agents;
+
+    //  update every once in a while
     setTimeout(update, 10000);
 
-    iplogger.count(function(err,count){
+    // update stuff
+    iplogger.find(function(err, logs){
 
-        // if we have a count
-        if(count){
+        // set the new ipCount
+        ipCount = logs.length;
+        
+        i=0;
 
-            console.log(count);
+        // reset os count
+        osCount = {
+            total : 0,
+            android : 0,
+            otherLinux : 0,
+            otherOS : 0
 
-            // update ip count
-            ipCount = count;
+        };
 
+        // find new OS count
+        while(i < ipCount){
+
+            agents = logs[i].userAgents;
+            a = 0; aLen = agents.length;
+
+            while(a < aLen){
+                //console.log('    '+agents[a].userAgentString);
+
+                osCount.total += 1;
+
+                // is linux?
+                if(agents[a].userAgentString.toLowerCase().match(/linux/)){
+
+                    // android?
+                    if(agents[a].userAgentString.toLowerCase().match(/android/)){
+
+                        osCount.android += 1;
+
+                    // other linux? :-)
+                    }else{
+
+                        osCount.otherLinux += 1;
+
+                    }
+ 
+                // other os, no idea? :-(
+                }else{
+
+                    osCount.otherOS += 1;
+
+                }
+
+                a++;
+            }
+
+            i++;
         }
+
+        console.log(osCount);
 
     });
 
