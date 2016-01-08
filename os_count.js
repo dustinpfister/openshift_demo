@@ -1,22 +1,6 @@
 var mongoose = require('mongoose'),
 
-    // setup the openShift Object
-    openShift = {
-
-        // get the string needed to make a connection to mono
-        mongo: (function() {
-
-            // if deployed to openshift get the string based on enviornment variables, else assume local
-            return process.env.OPENSHIFT_MONGODB_DB_PASSWORD ? process.env.OPENSHIFT_MONGODB_DB_USERNAME +
-                ":" + process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +
-                process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-                process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
-                process.env.OPENSHIFT_APP_NAME : 'mongodb://localhost/openshift_demo';
-
-        }())
-
-    },
-
+    openShift = require('./openshift.js').openShiftObj,
 
     db = mongoose.createConnection(openShift.mongo),
     Schema = mongoose.Schema,

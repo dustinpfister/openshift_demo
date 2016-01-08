@@ -9,42 +9,14 @@
 var express = require('express'),
     mongoose = require('mongoose'),
     os_count = require('./os_count.js'),
-
+    openShift = require('./openshift.js').openShiftObj,
 
     // express app
     app = express(),
 
-    // to hold any openshift stuff, like environment variables.
-    openShift = {};
-
-//  Set the environment variables we need.
-openShift.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-openShift.port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-openShift.mongo = 'mongodb://localhost/openshift_demo'; // default to local
-
-// if offline
-if (typeof openShift.ipaddress === "undefined") {
-
-    // use something local such as "127.0.0.1", "localhost", or something like "192.168.1.4"
-    openShift.ipaddress = '192.168.1.4';
-    console.warn('Working offline? , using ' + openShift.ipaddress + ' on port ' + openShift.port);
-};
-
-// mongo on openshift?
-// if OPENSHIFT env variables are present, use the available connection info:
-if (process.env.OPENSHIFT_MONGODB_DB_PASSWORD) {
-
-    openShift.mongo = process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" +
-        process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" +
-        process.env.OPENSHIFT_MONGODB_DB_HOST + ':' +
-        process.env.OPENSHIFT_MONGODB_DB_PORT + '/' +
-        process.env.OPENSHIFT_APP_NAME;
-
-}
-
 // mongoose
 //var db = mongoose.connect(openShift.mongo),
-var db = mongoose.createConnection(openShift.mongo),
+db = mongoose.createConnection(openShift.mongo),
     Schema = mongoose.Schema,
     simpleCount = db.model('simplecount', new Schema({
         id: String,
