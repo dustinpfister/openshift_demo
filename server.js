@@ -99,14 +99,21 @@ findAgent = function(log, userAgent){
         
 };
 
+// trust proxy
+app.enable('trust proxy');
+
 // root path get requests
 app.get('/', function(req, res){
 
     var newInfo, 
     displayCount = 0,
-    userIP = req.connection.remoteAddress,
+    userIP = req.ip,
     userAgent = req.get('user-agent'),
     userAgentVisit = 0;
+
+    console.log('app.get(\'trust proxy\'): ' + app.get('trust proxy')  );
+    console.log('req.ip: '+req.ip);
+    console.log('req.connection.remoteAddress: '+req.connection.remoteAddress);
 
     // find record for ip address
     iplogger.findOne({'ip': userIP}, '', function(err, log){
@@ -155,6 +162,7 @@ app.get('/', function(req, res){
                 ip : userIP,
                 visitCount : 1,
                 userAgents: []
+
             });
 
             log.userAgents.push({
@@ -228,9 +236,12 @@ app.get('/', function(req, res){
              '</div>'+
 
 
-            '<h2>unique ip count: </h2>'+
-            '<p>I have logged '+ipCount+' unique ip address in my database.</p>'+
-            '<p> YOU are a visiter from the unique ip ' + log.ip + ', and i have a visit count of ' + log.visitCount + ' from this ip address.</p>'+
+            '<h2> unique ip count: </h2>'+
+            '<p> I have logged '+ipCount+' unique ip address in my database.</p>'+
+            '<p> req.get(\'host\'): '+req.get('host')+'</p>'+
+            '<p> req.ip: '+req.ip+'</p>'+
+            '<p> req.connection.remoteAddress: '+req.connection.remoteAddress+'</p>'+
+            '<p> YOU are a visiter from the ip (log.ip from req.ip)  ' + log.ip + ', and i have a visit count of ' + log.visitCount + ' from this ip address.</p>'+
             '<h2> User agent history from this ip: </h2>'+
             html
             );
