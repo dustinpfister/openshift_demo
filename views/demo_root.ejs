@@ -1,0 +1,21 @@
+<h1>Hello I am Dustins OpenShift Demo APP!</h1>
+<p>Be sure to check the github at: <a href="https://github.com/dustinpfister/openshift_demo">https://github.com/dustinpfister/openshift_demo</a></p>
+
+<ul>
+    <li>Visit Count: <%= displayCount %></li>
+    <li>Logged IP Address: <%= ipCount %> </li>
+    <li>OS Stats: 
+        <div style="background: #7a7a7a; padding:20px;">   
+           <%- os_stats %>
+        </div>
+    </li>
+    <li>Your IP Address is: <%= clientIP %> </li>
+    <li>Visits from Your IP: <%= clientVisit %> </li>
+    <li>Your User Agent Strings: 
+        <div style="background: #7a7a7a; padding:20px;"> 
+
+            <%- clientUA %>
+
+        </div>
+    </li>
+</ul>

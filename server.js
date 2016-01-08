@@ -67,6 +67,11 @@ db = mongoose.createConnection(openShift.mongo),
 // trust proxy
 app.enable('trust proxy');
 
+// lets try EJS
+app.set('view engine', 'ejs');
+//app.use(expressLayouts);
+app.use(express.static('views')); // must do this to get external files
+
 // root path get requests
 app.get('/', function(req, res) {
 
@@ -185,6 +190,7 @@ app.get('/', function(req, res) {
             }
 
             //  send simple demo message, with visiter count.
+/*
             res.send(' <h1>hello i am dustins openshift_demo app working at openshift</h1><br><br>' +
                 '<h2>Visit Count</h2>' +
                 '<p> You are visiter #: ' + displayCount + '</p>' +
@@ -202,6 +208,16 @@ app.get('/', function(req, res) {
                 '<h2> User agent history from this ip: </h2>' +
                 html
             );
+*/
+            res.render('demo_root',{
+                displayCount : displayCount,
+                ipCount : os_count.getIPCount(),
+                os_stats: os_count.makeHTML(),
+                clientIP : log.ip,
+                clientVisit : log.visitCount,
+                clientUA : html
+            });
+
 
         });
 
