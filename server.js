@@ -10,11 +10,99 @@ var express = require('express'),
 mongoose = require('mongoose'),
 
 ipCount = 0, // number of ip address logged
+
+osPats = [
+    {osName: 'Android', pat: /android/, color: 'orange' },
+    {osName: 'Linux', pat: /linux/, color: 'yellow' },
+    {osName: 'Windows', pat: /windows/, color: 'green' },
+
+    {osName: 'total', color: 'black' },
+    {osName: 'Other', color: 'grey' }
+
+],
+
 osCount = {
-    total : 0,
-    android : 0,
-    otherLinux : 0,
-    otherOS : 0
+    //total : 0,
+    //android : 0,
+    //otherLinux : 0,
+    //otherOS : 0
+},
+osReset = function(){
+
+    osCount = {};
+    osCount.total = {
+        count: 0,
+        color: 'black'
+    }
+
+},
+osCountUA = function(UA){
+
+    var i=0, len = osPats.length;
+
+    osCount.total.count += 1;
+
+    while(i < len){
+
+        if(UA.toLowerCase().match(osPats[i].pat)){
+
+            var osName = osPats[i].osName;
+            if(osCount[osName] === undefined){
+                osCount[osName] = {
+                    count: 1,
+                    color: osPats[i].color
+                }
+            }else{
+               osCount[osName].count += 1;
+            }
+
+            break;
+
+        }
+
+        i++;
+
+    }
+
+    if(i === len){
+        if(osCount['Other'] === undefined){
+            osCount['Other'] = {
+                count: 1,
+                color: 'red'
+            }
+        }else{
+
+            osCount['Other'].count += 1;
+
+        }
+    }
+
+},
+
+makeOSCountHTML = function(){
+
+    var html = '<ul>';
+
+    for(var os in osCount){
+        html += '<li style="color:'+osCount[os].color+';">'+os + ' : ' + osCount[os].count+'</li>';
+    }
+
+
+    return html+'</ul>';
+
+},
+
+makeOSDivBar = function(){
+
+    var html='';
+
+    for(osName in osCount){
+        if(osName !== 'total'){
+            html += '<div style="display:inline-block; width:'+Math.floor(osCount[osName].count / osCount['total'].count * 400)+'px; height:30px; background:'+osCount[osName].color+';"></div>';
+        }
+    }
+
+    return '<div style="width:400px;height:30px;background:#888888;">'+html+'</div>';;
 
 },
 
@@ -99,6 +187,8 @@ findAgent = function(log, userAgent){
         
 };
 
+
+
 // trust proxy
 app.enable('trust proxy');
 
@@ -109,11 +199,8 @@ app.get('/', function(req, res){
     displayCount = 0,
     userIP = req.ip,
     userAgent = req.get('user-agent'),
-    userAgentVisit = 0;
-
-    console.log('app.get(\'trust proxy\'): ' + app.get('trust proxy')  );
-    console.log('req.ip: '+req.ip);
-    console.log('req.connection.remoteAddress: '+req.connection.remoteAddress);
+    userAgentVisit = 0,
+    agent, html, i;
 
     // find record for ip address
     iplogger.findOne({'ip': userIP}, '', function(err, log){
@@ -208,13 +295,10 @@ app.get('/', function(req, res){
 
             }
         
-           var agent = log.userAgents, html='',i=0;
 
-
+           agent = log.userAgents, html='',i=0;
            while(i < agent.length){
-
                html += '<ul><li>'+agent[i].userAgentString + ' </li><li>' + agent[i].visitCount+'</li></ul>';;
-
                i++;
            }
 
@@ -224,16 +308,21 @@ app.get('/', function(req, res){
             '<p> You are visiter #: '+ displayCount + '</p>'+
 
              '<h2>OS Count</h2>'+
-             '<p style="color:#ffaa00;">Android: '+osCount.android+'</p>'+
-             '<p style="color:#ffff00;">Other Linux: '+osCount.otherLinux+'</p>'+
-             '<p style="color:#888888;">Other OS / Unkown: '+osCount.otherOS+'</p>'+
+
+             makeOSCountHTML() +
+             makeOSDivBar()+
+
+
+//             '<p style="color:#ffaa00;">Android: '+osCount.android+'</p>'+
+//             '<p style="color:#ffff00;">Other Linux: '+osCount.otherLinux+'</p>'+
+//             '<p style="color:#888888;">Other OS / Unkown: '+osCount.otherOS+'</p>'+
              
-             '<div style="width:300px; height:30px; background:#888888;">'+
+             //'<div style="width:300px; height:30px; background:#888888;">'+
 
-                 '<div style="display:inline-block; width:'+Math.floor(osCount.android / osCount.total * 300)+'px; height:30px; background:#ffaa00;"></div>'+
-                 '<div style="display:inline-block; width:'+Math.floor(osCount.otherLinux / osCount.total * 300)+'px; height:30px; background:#ffff00;"></div>'+
+//                 '<div style="display:inline-block; width:'+Math.floor(osCount.android / osCount.total * 300)+'px; height:30px; background:#ffaa00;"></div>'+
+//                 '<div style="display:inline-block; width:'+Math.floor(osCount.otherLinux / osCount.total * 300)+'px; height:30px; background:#ffff00;"></div>'+
 
-             '</div>'+
+             //'</div>'+
 
 
             '<h2> unique ip count: </h2>'+
@@ -270,13 +359,17 @@ var update = function(){
         i=0;
 
         // reset os count
-        osCount = {
-            total : 0,
-            android : 0,
-            otherLinux : 0,
-            otherOS : 0
+        //osCount = {
+      //      total : 0,
+      //      android : 0,
+      //      otherLinux : 0,
+      //      otherOS : 0
 
-        };
+        //};
+
+        //osCount.total = 0;
+
+        osReset();
 
         // find new OS count
         while(i < ipCount){
@@ -287,8 +380,11 @@ var update = function(){
             while(a < aLen){
                 //console.log('    '+agents[a].userAgentString);
 
-                osCount.total += 1;
+               // osCount.total += 1;
 
+                osCountUA(agents[a].userAgentString);
+
+/*
                 // is linux?
                 if(agents[a].userAgentString.toLowerCase().match(/linux/)){
 
@@ -310,6 +406,7 @@ var update = function(){
                     osCount.otherOS += 1;
 
                 }
+*/
 
                 a++;
             }
