@@ -69,7 +69,7 @@ app.enable('trust proxy');
 
 // lets try EJS
 app.set('view engine', 'ejs');
-//app.use(expressLayouts);
+app.use(require('express-ejs-layouts'));
 app.use(express.static('views')); // must do this to get external files
 
 // root path get requests
