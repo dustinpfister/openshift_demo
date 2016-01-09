@@ -189,26 +189,7 @@ app.get('/', function(req, res) {
                 i++;
             }
 
-            //  send simple demo message, with visiter count.
-/*
-            res.send(' <h1>hello i am dustins openshift_demo app working at openshift</h1><br><br>' +
-                '<h2>Visit Count</h2>' +
-                '<p> You are visiter #: ' + displayCount + '</p>' +
-
-                '<h2>OS Count</h2>' +
-
-                os_count.makeHTML() +
-
-                '<h2> unique ip count: </h2>' +
-                '<p> I have logged ' + os_count.getIPCount() + ' unique ip address in my database.</p>' +
-                '<p> req.get(\'host\'): ' + req.get('host') + '</p>' +
-                '<p> req.ip: ' + req.ip + '</p>' +
-                '<p> req.connection.remoteAddress: ' + req.connection.remoteAddress + '</p>' +
-                '<p> YOU are a visiter from the ip (log.ip from req.ip)  ' + log.ip + ', and i have a visit count of ' + log.visitCount + ' from this ip address.</p>' +
-                '<h2> User agent history from this ip: </h2>' +
-                html
-            );
-*/
+            // render ejs
             res.render('demo_root',{
                 displayCount : displayCount,
                 ipCount : os_count.getIPCount(),
