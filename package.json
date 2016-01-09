@@ -1,10 +1,6 @@
 {
   "name": "openshift_demo",
-<<<<<<< HEAD
-  "version": "1.0.7",
-=======
-  "version": "1.2.0",
->>>>>>> ejs
+  "version": "1.2.1",
   "description": "openshift demo",
   "main": "server.js",
   "dependencies": {
